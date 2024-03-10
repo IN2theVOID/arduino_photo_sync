@@ -1,0 +1,6 @@
+uint16_t address = 0x707;
+uint16_t command = 0xE6;
+uint32_t rawData = 0x19E60707;
+
+
+Send with: IrSender.sendSamsung(0x707, 0xE6, <numberOfRepeats>);
