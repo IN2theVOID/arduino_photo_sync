@@ -5,8 +5,12 @@
 #include "PinDefinitionsAndMore.h"
 #include <IRremote.hpp> // include the library
 
+const bool VIDEO_BUTTON_ENABLED = false; // подключена ли видео-кнопка?
+
 const int LIGHT_SENSOR_PIN = 7; // пин датчика света 
-const int BUTTON_PIN = 8; // пин кнопки
+const int PHOTO_BUTTON_PIN = 8; // пин кнопки (фото-съемка)
+const int VIDEO_BUTTON_PIN = 9; // пин кнопки (видео-съемка)
+
 const int LED_PIN = 13; // пин индикационного светодиода
 // IR Sender pin - пин ИК передатчика на УНО и НАНО = 2
 
@@ -14,7 +18,8 @@ int send_count = 0; // счетчик отправок
 
 void setup() {
     pinMode(LED_PIN, OUTPUT); 
-    pinMode(BUTTON_PIN, INPUT);
+    pinMode(PHOTO_BUTTON_PIN, INPUT);
+    pinMode(VIDEO_BUTTON_PIN, INPUT);
     pinMode(LIGHT_SENSOR_PIN, INPUT);
 
     Serial.begin(115200);
@@ -27,27 +32,39 @@ void setup() {
 }
 
 void loop() {
-  if (digitalRead(LIGHT_SENSOR_PIN) == LOW or digitalRead(BUTTON_PIN) == HIGH) { // Если сработал датчик или нажата кнопка
-    // Отправляем ИК код
-    Serial.println("Sending IR code");
+
+  // ФОТО
+  if (digitalRead(LIGHT_SENSOR_PIN) == LOW or digitalRead(PHOTO_BUTTON_PIN) == HIGH) { // Если сработал датчик или нажата кнопка фото
+    // Отправляем ИК код (фото)
+    Serial.println("Sending IR code (Photo)");
     Serial.println("Counter: " + String(send_count));
-    // IrSender.sendSamsung(0x707, 0xE6, 5); // Отправка ИК кода для ТВ Самсунг
-    IrSender.sendNEC(0x0, 0x8, 5); // Отправка ИК кода (Пульт FullHD Съемка)
+    IrSender.sendNEC(0x0, 0x8, 5); // Отправка ИК кода (Пульт FullHD Съемка фото)
     send_count += 1; // Увеличиваем счетчик
     
-    // for(int i = 0; i < 2; i++){
-    //   // Моргаем светодиодом
-    //   digitalWrite(LED_PIN, HIGH);
-    //   delay(30);
-    //   digitalWrite(LED_PIN, LOW);
-    //   delay(30);
-    // }
-    
-    while (digitalRead(LIGHT_SENSOR_PIN) == LOW or digitalRead(BUTTON_PIN) == HIGH){
+    while (digitalRead(LIGHT_SENSOR_PIN) == LOW or digitalRead(PHOTO_BUTTON_PIN) == HIGH){
       // Ждем пока сигнал пропадет
       delay(10);
     }
+
   } else {
-    digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_PIN, LOW); // в любой непонятной ситуации гасим светодиод
   }
+
+  // ВИДЕО
+  if (digitalRead(VIDEO_BUTTON_PIN) == HIGH and VIDEO_BUTTON_ENABLED == true) { // Если доступна и нажата кнопка видео
+    // Отправляем ИК код (видео)
+    Serial.println("Sending IR code (Video)");
+    IrSender.sendNEC(0x0, 0x1C, 5); // Отправка ИК кода (Пульт FullHD Съемка видео)
+    
+    while (digitalRead(VIDEO_BUTTON_PIN) == HIGH and VIDEO_BUTTON_ENABLED == true){
+      // Ждем пока сигнал пропадет
+      delay(10);
+    }
+
+  } else {
+    digitalWrite(LED_PIN, LOW); // в любой непонятной ситуации гасим светодиод
+  }
+
 }
+
+
