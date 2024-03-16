@@ -5,7 +5,7 @@
 #include "PinDefinitionsAndMore.h"
 #include <IRremote.hpp> // include the library
 
-const bool VIDEO_BUTTON_ENABLED = false; // подключена ли видео-кнопка?
+const bool VIDEO_BUTTON_ENABLED = true; // подключена ли видео-кнопка?
 
 const int LIGHT_SENSOR_PIN = 7; // пин датчика света 
 const int PHOTO_BUTTON_PIN = 8; // пин кнопки (фото-съемка)
